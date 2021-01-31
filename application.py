@@ -45,7 +45,7 @@ except FileNotFoundError:
         "access_token": os.getenv('IMGUR_ACCESS'),
         "refresh_token": os.getenv('IMGUR_REFRESH')
     }
-    
+
 PERSON_GROUP_ID = "tibame"
 CV_CLIENT = ComputerVisionClient(
     ENDPOINT, CognitiveServicesCredentials(SUBSCRIPTION_KEY))
@@ -188,7 +188,7 @@ def handle_message(event):
     LINE_BOT.reply_message(event.reply_token, message)
 
 
-HANDLER.add(MessageEvent, message=ImageMessage)
+@HANDLER.add(MessageEvent, message=ImageMessage)
 def handle_content_message(event):
     """
     Reply Image message with results of image description and objection detection
