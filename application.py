@@ -15,6 +15,7 @@ from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             FlexSendMessage, ImageMessage)
 from imgur_python import Imgur
 from PIL import Image, ImageDraw, ImageFont
+import time
 
 app = Flask(__name__)
 
