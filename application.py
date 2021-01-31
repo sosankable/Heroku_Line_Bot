@@ -188,33 +188,41 @@ def handle_message(event):
     LINE_BOT.reply_message(event.reply_token, message)
 
 
-@HANDLER.add(MessageEvent, message=ImageMessage)
+HANDLER.add(MessageEvent, message=ImageMessage)
 def handle_content_message(event):
     """
     Reply Image message with results of image description and objection detection
     """
-    if isinstance(event.message, ImageMessage):
-        print(event.message)
-        print(event.source.user_id)
-        print(event.message.id)
-        filename = "{}.jpg".format(event.message.id)
-        message_content = LINE_BOT.get_message_content(event.message.id)
-        with open(filename, 'wb') as f_w:
-            for chunk in message_content.iter_content():
-                f_w.write(chunk)
-        f_w.close()
-        image = IMGUR_CLIENT.image_upload(filename, 'first', 'first')
-        link = image['response']['data']['link']
-        output = azure_describe(link)
-        az_output = AzureImageOutput(link, filename)
-        link = az_output()
-        with open('templates/detect_result.json', 'r') as f_r:
-            bubble = json.load(f_r)
-        f_r.close()
-        bubble['body']['contents'][0]['contents'][0]['contents'][0][
-            'text'] = output
-        bubble['header']['contents'][0]['contents'][0]['contents'][0][
-            'url'] = link
-        LINE_BOT.reply_message(
-            event.reply_token,
-            [FlexSendMessage(alt_text="Report", contents=bubble)])
+    print(event.message)
+    print(event.source.user_id)
+    print(event.message.id)
+    filename = "{}.jpg".format(event.message.id)
+    message_content = LINE_BOT.get_message_content(event.message.id)
+    with open(filename, "wb") as f_w:
+        for chunk in message_content.iter_content():
+            f_w.write(chunk)
+    f_w.close()
+    image = IMGUR_CLIENT.image_upload(filename, "first", "first")
+    link = image["response"]["data"]["link"]
+    name = azure_face_recognition(filename)
+
+    if name != "":
+        now = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
+        output = "{0}, {1}".format(name, now)
+    else:
+        plate = azure_ocr(link)
+        link_ob = azure_object_detection(link, filename)
+        if len(plate) > 0:
+            output = "License Plate: {}".format(plate)
+        else:
+            output = azure_describe(link)
+        link = link_ob
+
+    with open("templates/detect_result.json", "r") as f_r:
+        bubble = json.load(f_r)
+    f_r.close()
+    bubble["body"]["contents"][0]["contents"][0]["contents"][0]["text"] = output
+    bubble["header"]["contents"][0]["contents"][0]["contents"][0]["url"] = link
+    LINE_BOT.reply_message(
+        event.reply_token, [FlexSendMessage(alt_text="Report", contents=bubble)]
+    )
