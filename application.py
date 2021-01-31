@@ -46,6 +46,7 @@ except FileNotFoundError:
         "refresh_token": os.getenv('IMGUR_REFRESH')
     }
 
+FACE_CLIENT = FaceClient(FACE_END, CognitiveServicesCredentials(FACE_KEY))
 PERSON_GROUP_ID = "tibame"
 CV_CLIENT = ComputerVisionClient(
     ENDPOINT, CognitiveServicesCredentials(SUBSCRIPTION_KEY))
