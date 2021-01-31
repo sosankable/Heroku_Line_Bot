@@ -53,7 +53,7 @@ except FileNotFoundError:
     }
 
 FACE_CLIENT = FaceClient(FACE_END, CognitiveServicesCredentials(FACE_KEY))
-PERSON_GROUP_ID = "tibame"
+PERSON_GROUP_ID = "tibame_ssssank"
 CV_CLIENT = ComputerVisionClient(
     ENDPOINT, CognitiveServicesCredentials(SUBSCRIPTION_KEY))
 LINE_BOT = LineBotApi(LINE_TOKEN)
